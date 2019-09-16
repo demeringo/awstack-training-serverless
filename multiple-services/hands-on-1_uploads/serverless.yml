@@ -1,0 +1,47 @@
+service: awstacktraining-uploads
+
+custom:
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: ${opt:stage, self:provider.stage}
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: eu-west-1
+
+resources:
+  Resources:
+    # Naming convention (S3Bucket<resource-name> seems important to be alloweed to configure event later)
+    # See https://github.com/serverless/serverless/issues/4194#issuecomment-455568672
+    S3BucketUploads:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.stage}-upload-bucket-longname
+        # Set the CORS policy
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - POST
+              MaxAge: 3000
+
+  # Print out the name of the bucket that is created
+  Outputs:
+    UploadBucketArn:
+      Value:
+        Fn::GetAtt:
+          - S3BucketUploads
+          - Arn
+      Export:
+        Name: ${self:custom.stage}-UploadBucketArn
+
+    UploadBucketName:
+      Value:
+        Ref: S3BucketUploads
+      Export:
+        Name: ${self:custom.stage}-UploadBucketName

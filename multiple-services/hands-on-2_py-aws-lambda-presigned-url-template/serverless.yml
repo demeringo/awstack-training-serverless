@@ -1,0 +1,38 @@
+service: aws-lambda-presigned-url # NOTE: update this with your service name
+
+custom:
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: ${opt:stage, self:provider.stage}
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: eu-west-1
+
+  # WARNING: this is a very permissive policy
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+        - "lambda:GetLayerVersion"
+        - "lambda:GetLayerVersionPolicy"
+        - "s3:*"
+        - "sns:*"
+        - "dynamodb:*"
+      Resource: "*"
+
+functions:
+  reco-image:
+    handler: lambda_function.lambda_handler
+    events:
+      - http:
+          path: upload
+          method: get
+          cors: true
+    environment:
+      bucketName:
+        "Fn::ImportValue": ${self:custom.stage}-UploadBucketName
