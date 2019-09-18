@@ -2,7 +2,9 @@
 
 This repository contains a demo AWS serverless application (using AWS lambada and other services).
 
-It was inscpired by the demo app build during the training session organized by stack labs early 2019.
+This is **not a production grade** application, security is very basic.
+
+It was inspired by the demo app build during the training session organized by stack labs early 2019.
 
 > Découvrez les **avantages de l'architecture serverless** pour :
 >
